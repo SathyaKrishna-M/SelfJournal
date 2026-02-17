@@ -207,8 +207,6 @@ export const DriveService = {
         if (!this.accessToken) await this.authenticate();
 
         // 1. Find Folder
-        // We search effectively for any .sjv file in the app scope or specifically in our folder
-        // Since we created it, we have access.
         const q = "name contains 'selfjournal_backup_' and trashed = false";
         const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&orderBy=createdTime desc`, {
             headers: { 'Authorization': `Bearer ${this.accessToken}` }
@@ -220,8 +218,6 @@ export const DriveService = {
             return;
         }
 
-        // For now, simple restore: pick the latest
-        // Ideally we show a UI list, but "Restore" button usually implies "Get my data back"
         const latestFile = data.files[0];
 
         if (!confirm(`Restore from backup: ${latestFile.name}? This will OVERWRITE local data.`)) {
@@ -233,8 +229,49 @@ export const DriveService = {
         });
         const backup = await dlRes.json();
 
+        // Helper to recursively fix Uint8Arrays from JSON objects
+        const hydrateDeep = (obj: any): any => {
+            if (obj === null || typeof obj !== 'object') {
+                return obj;
+            }
+
+            // Detect if this object looks like a serialized Uint8Array (numeric keys '0', '1', etc.)
+            // A simple heuristic: if it has keys '0', '1' and is not an array, convert.
+            // But JSON.stringify of Uint8Array sometimes makes it an object: {0: x, 1: y...}
+            // Dexie might have stored it as ArrayBuffer which stringifies differently, 
+            // BUT usually crypto keys are Uint8Arrays.
+            // Let's check structurally.
+
+            // If it's an array, map over it
+            if (Array.isArray(obj)) {
+                return obj.map(hydrateDeep);
+            }
+
+            // Check if it's a serialized Uint8Array (object with numeric keys)
+            const keys = Object.keys(obj);
+            if (keys.length > 0 && keys.every(k => !isNaN(Number(k)))) {
+                // It's likely a byte array
+                const length = Math.max(...keys.map(Number)) + 1;
+                const arr = new Uint8Array(length);
+                for (const k of keys) {
+                    arr[Number(k)] = obj[k];
+                }
+                return arr;
+            }
+
+            // Otherwise, recurse values
+            const newObj: any = {};
+            for (const [k, v] of Object.entries(obj)) {
+                newObj[k] = hydrateDeep(v);
+            }
+            return newObj;
+        };
+
+        // Hydrate the ENTIRE structure
+        const hydratedBackup = hydrateDeep(backup);
+
         // Validation
-        if (!backup.auth || !Array.isArray(backup.entries)) {
+        if (!hydratedBackup.auth || !Array.isArray(hydratedBackup.entries)) {
             throw new Error("Invalid backup format. Missing vital data.");
         }
 
@@ -242,22 +279,22 @@ export const DriveService = {
         const { AuthService } = await import('../auth/authService');
 
         // 1. Restore Auth Keys
-        await AuthService.restoreFromBackupData(backup.auth);
+        await AuthService.restoreFromBackupData(hydratedBackup.auth);
 
         // 2. Restore Entries
         await db.entries.clear();
-        await db.entries.bulkAdd(backup.entries);
+        await db.entries.bulkAdd(hydratedBackup.entries);
 
         // 3. Restore Images
-        if (backup.images) {
+        if (hydratedBackup.images) {
             await db.images.clear();
-            await db.images.bulkAdd(backup.images);
+            await db.images.bulkAdd(hydratedBackup.images);
         }
 
         // 4. Restore Settings
-        if (backup.settings) {
+        if (hydratedBackup.settings) {
             await db.settings.clear();
-            await db.settings.bulkAdd(backup.settings);
+            await db.settings.bulkAdd(hydratedBackup.settings);
         }
 
         alert('Restore complete! Please log in with your password to decrypt the journal.');
