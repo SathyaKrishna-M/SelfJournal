@@ -1,0 +1,14 @@
+src/features/journal/components/tiptap/EncryptedImage.tsx(4,30): error TS2307: Cannot find module '../image/imageService' or its corresponding type declarations.
+src/features/journal/components/tiptap/EncryptedImage.tsx(9,31): error TS6133: 'alignment' is declared but its value is never read.
+src/features/journal/components/tiptap/RichTextEditor.tsx(1,36): error TS2305: Module '"@tiptap/react"' has no exported member 'BubbleMenu'.
+src/features/journal/components/tiptap/RichTextEditor.tsx(1,36): error TS6133: 'BubbleMenu' is declared but its value is never read.
+src/features/journal/components/tiptap/RichTextEditor.tsx(48,26): error TS6133: 'view' is declared but its value is never read.
+src/features/journal/components/tiptap/RichTextEditor.tsx(48,39): error TS6133: 'slice' is declared but its value is never read.
+src/features/journal/components/tiptap/RichTextEditor.tsx(59,27): error TS6133: 'view' is declared but its value is never read.
+src/features/journal/components/tiptap/RichTextEditor.tsx(59,40): error TS6133: 'slice' is declared but its value is never read.
+src/features/journal/components/tiptap/RichTextEditor.tsx(88,40): error TS2339: Property 'setImage' does not exist on type 'ChainedCommands'.
+src/features/journal/components/tiptap/RichTextEditor.tsx(128,11): error TS6133: 'handleInsertText' is declared but its value is never read.
+src/features/journal/components/tiptap/RichTextEditor.tsx(128,31): error TS6133: 'before' is declared but its value is never read.
+src/features/journal/components/tiptap/RichTextEditor.tsx(128,47): error TS6133: 'after' is declared but its value is never read.
+src/features/journal/EntryEditor.tsx(1,44): error TS6133: 'useRef' is declared but its value is never read.
+src/features/journal/EntryEditor.tsx(119,19): error TS6133: 'currentId' is declared but its value is never read.
