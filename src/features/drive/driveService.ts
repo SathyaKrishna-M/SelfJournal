@@ -127,36 +127,78 @@ export const DriveService = {
         if (!authData) throw new Error("Cannot backup: No encryption keys found locally.");
 
         const today = new Date().toISOString().split('T')[0];
+
+        // Helper to convert buffer to base64
+        const bufferToBase64 = (buffer: ArrayBuffer | Uint8Array): string => {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        };
+
+        // Deep serializer to handle binary data
+        const serializeDeep = (obj: any): any => {
+            if (obj === null || obj === undefined) return obj;
+
+            // Handle binary types
+            if (obj instanceof ArrayBuffer || obj instanceof Uint8Array || (obj.buffer && obj.byteLength !== undefined)) {
+                return { __type: 'bytes', data: bufferToBase64(obj) };
+            }
+
+            if (Array.isArray(obj)) {
+                return obj.map(serializeDeep);
+            }
+
+            if (typeof obj === 'object') {
+                const newObj: any = {};
+                for (const key in obj) {
+                    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                        newObj[key] = serializeDeep(obj[key]);
+                    }
+                }
+                return newObj;
+            }
+
+            return obj;
+        };
+
         const backupData = {
-            version: 2, // Bump version implies auth data included
+            version: 3, // Bump version for Base64 format
             backupDate: new Date().toISOString(),
-            auth: authData, // Encrypted Vault Keys
-            entries,        // Encrypted Entries
-            images: await db.images.toArray(), // Encrypted Images
-            settings
+            auth: serializeDeep(authData),
+            entries: serializeDeep(entries),
+            images: serializeDeep(await db.images.toArray()),
+            settings: serializeDeep(settings)
         };
 
         const fileContent = JSON.stringify(backupData);
         const fileName = `selfjournal_backup_${today}.sjv`;
 
-        const metadata = {
+        // Define a type for metadata that makes 'parents' optional
+        type DriveMetadata = {
+            name: string;
+            mimeType: string;
+            parents?: string[];
+        };
+
+        // Initial metadata for creation (includes parents)
+        const createMetadata: DriveMetadata = {
             name: fileName,
             mimeType: 'application/json',
             parents: [folderId]
         };
 
+        // Metadata for update (must NOT include parents)
+        const updateMetadata: DriveMetadata = {
+            name: fileName,
+            mimeType: 'application/json'
+        };
+
         const boundary = '-------314159265358979323846';
         const delimiter = "\r\n--" + boundary + "\r\n";
         const close_delim = "\r\n--" + boundary + "--";
-
-        const multipartRequestBody =
-            delimiter +
-            'Content-Type: application/json\r\n\r\n' +
-            JSON.stringify(metadata) +
-            delimiter +
-            'Content-Type: application/json\r\n\r\n' +
-            fileContent +
-            close_delim;
 
         // Check if today's backup already exists
         const q = `'${folderId}' in parents and name = '${fileName}' and trashed = false`;
@@ -168,17 +210,22 @@ export const DriveService = {
 
         let url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
         let method = 'POST';
+        let metadataToUse = createMetadata;
 
         if (existingFileId) {
             url = `https://www.googleapis.com/upload/drive/v3/files/${existingFileId}?uploadType=multipart`;
             method = 'PATCH';
-            // For PATCH, we strictly shouldn't send parents again usually, but Drive API often tolerates it or we construct body differently.
-            // Simpler to just delete and re-upload or overwrite. 
-            // Let's stick to standard "Create new daily" approach or overwrite. 
-            // To properly PATCH metadata + content in one go is complex. 
-            // Easier logic: if exists, update content.
-            // Actually, the prompt says "Daily Auto Export". Overwriting today's file is fine.
+            metadataToUse = updateMetadata;
         }
+
+        const multipartRequestBody =
+            delimiter +
+            'Content-Type: application/json\r\n\r\n' +
+            JSON.stringify(metadataToUse) +
+            delimiter +
+            'Content-Type: application/json\r\n\r\n' +
+            fileContent +
+            close_delim;
 
         const res = await fetch(url, {
             method,
@@ -229,29 +276,40 @@ export const DriveService = {
         });
         const backup = await dlRes.json();
 
-        // Helper to recursively fix Uint8Arrays from JSON objects
+        // Helper to convert base64 to Uint8Array
+        const base64ToUint8Array = (base64: string): Uint8Array => {
+            const binary = window.atob(base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes;
+        };
+
+        // Helper to recursively fix Uint8Arrays
         const hydrateDeep = (obj: any): any => {
             if (obj === null || typeof obj !== 'object') {
                 return obj;
             }
 
-            // Detect if this object looks like a serialized Uint8Array (numeric keys '0', '1', etc.)
-            // A simple heuristic: if it has keys '0', '1' and is not an array, convert.
-            // But JSON.stringify of Uint8Array sometimes makes it an object: {0: x, 1: y...}
-            // Dexie might have stored it as ArrayBuffer which stringifies differently, 
-            // BUT usually crypto keys are Uint8Arrays.
-            // Let's check structurally.
+            // Case 1: Base64 Encoded (New Format)
+            if (obj.__type === 'bytes' && typeof obj.data === 'string') {
+                return base64ToUint8Array(obj.data);
+            }
 
-            // If it's an array, map over it
+            // Case 2: Array
             if (Array.isArray(obj)) {
                 return obj.map(hydrateDeep);
             }
 
-            // Check if it's a serialized Uint8Array (object with numeric keys)
+            // Case 3: Legacy "Numeric Keys" Object (Old Format)
             const keys = Object.keys(obj);
             if (keys.length > 0 && keys.every(k => !isNaN(Number(k)))) {
-                // It's likely a byte array
+                // Check if it looks like a byte array
                 const length = Math.max(...keys.map(Number)) + 1;
+                // Heuristic: If keys are dense 0..N, treat as array
+                // But this might catch normal objects with numeric keys. 
+                // However, in our schema, only byte arrays look like this.
                 const arr = new Uint8Array(length);
                 for (const k of keys) {
                     arr[Number(k)] = obj[k];
@@ -259,7 +317,7 @@ export const DriveService = {
                 return arr;
             }
 
-            // Otherwise, recurse values
+            // Case 4: Standard Object
             const newObj: any = {};
             for (const [k, v] of Object.entries(obj)) {
                 newObj[k] = hydrateDeep(v);
@@ -270,9 +328,27 @@ export const DriveService = {
         // Hydrate the ENTIRE structure
         const hydratedBackup = hydrateDeep(backup);
 
-        // Validation
-        if (!hydratedBackup.auth || !Array.isArray(hydratedBackup.entries)) {
-            throw new Error("Invalid backup format. Missing vital data.");
+        // Validation Helper
+        const isValidBinary = (data: any) => {
+            return (data instanceof ArrayBuffer || data instanceof Uint8Array) && data.byteLength > 0;
+        };
+
+        // Strict Validation: Check if critical keys exist and are binary
+        if (!hydratedBackup.auth) {
+            throw new Error("Invalid backup: Missing authentication data.");
+        }
+
+        const auth = hydratedBackup.auth;
+        // Check Master Key (Password)
+        if (!isValidBinary(auth.encryptedMasterKeyWithPassword?.ciphertext) ||
+            !isValidBinary(auth.encryptedMasterKeyWithPassword?.iv)) {
+            throw new Error("Backup CORRUPTED: Critical encryption keys are missing (likely from an old buggy version). Cannot restore.");
+        }
+
+        // Check Master Key (Recovery) - Optional but good to have
+        if (!isValidBinary(auth.encryptedMasterKeyWithRecovery?.ciphertext) ||
+            !isValidBinary(auth.encryptedMasterKeyWithRecovery?.iv)) {
+            console.warn("Backup warning: Recovery key might be corrupted.");
         }
 
         // Logic
