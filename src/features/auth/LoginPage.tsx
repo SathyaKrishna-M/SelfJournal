@@ -69,6 +69,23 @@ export default function LoginPage() {
                             Forgot Password?
                         </Link>
                     </div>
+
+                    <div className="pt-8 mt-8 border-t border-dashed border-stone-200 dark:border-stone-800">
+                        <button
+                            type="button"
+                            onClick={async () => {
+                                if (confirm("⚠️ EMERGENCY RESET: This will delete ALL local data to fix corruption. You will lose any data not backed up. Are you sure?")) {
+                                    const { db } = await import('../../core/storage/db');
+                                    await db.delete();
+                                    localStorage.clear();
+                                    window.location.reload();
+                                }
+                            }}
+                            className="w-full text-xs text-red-400 hover:text-red-600 dark:text-red-900/50 dark:hover:text-red-500 transition-colors"
+                        >
+                            Emergency Reset App (Clear Data)
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
