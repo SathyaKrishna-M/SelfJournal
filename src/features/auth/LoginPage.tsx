@@ -74,11 +74,42 @@ export default function LoginPage() {
                         <button
                             type="button"
                             onClick={async () => {
-                                if (confirm("⚠️ EMERGENCY RESET: This will delete ALL local data to fix corruption. You will lose any data not backed up. Are you sure?")) {
-                                    const { db } = await import('../../core/storage/db');
-                                    await db.delete();
-                                    localStorage.clear();
-                                    window.location.reload();
+                                if (confirm("⚠️ EMERGENCY RESET: This will delete ALL local data (Database, Cache, Settings). You will lose any data not backed up. Are you sure?")) {
+                                    try {
+                                        const { db } = await import('../../core/storage/db');
+
+                                        // 1. Close DB connection to prevent blocking
+                                        db.close();
+
+                                        // 2. Delete Database
+                                        await db.delete();
+
+                                        // 3. Clear Storage
+                                        localStorage.clear();
+                                        sessionStorage.clear();
+
+                                        // 4. Clear Cache Storage (PWA assets)
+                                        if ('caches' in window) {
+                                            const cacheKeys = await caches.keys();
+                                            await Promise.all(cacheKeys.map(key => caches.delete(key)));
+                                        }
+
+                                        // 5. Unregister Service Workers
+                                        if ('serviceWorker' in navigator) {
+                                            const registrations = await navigator.serviceWorker.getRegistrations();
+                                            for (const registration of registrations) {
+                                                await registration.unregister();
+                                            }
+                                        }
+
+                                        alert("Reset Complete. Redirecting to setup...");
+                                        window.location.href = '/';
+                                    } catch (e) {
+                                        console.error("Reset failed:", e);
+                                        alert("Reset failed partially. Please manually clear site data in browser settings.");
+                                        // Force reload anyway
+                                        window.location.href = '/';
+                                    }
                                 }
                             }}
                             className="w-full text-xs text-red-400 hover:text-red-600 dark:text-red-900/50 dark:hover:text-red-500 transition-colors"
