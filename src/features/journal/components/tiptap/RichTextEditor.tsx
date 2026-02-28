@@ -40,7 +40,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         },
         editorProps: {
             attributes: {
-                class: 'prose prose-stone dark:prose-invert max-w-none focus:outline-none min-h-[50vh] p-4 font-handwriting text-2xl leading-loose',
+                class: 'prose prose-stone dark:prose-invert max-w-[75ch] w-full mx-auto focus:outline-none min-h-[50vh] p-4 text-base leading-relaxed tracking-wide',
             },
             handleDrop: (_view: EditorView, event: DragEvent, _slice: Slice, moved: boolean) => {
                 if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {

@@ -67,7 +67,7 @@ export default function EntryList({ onSelectEntry }: EntryListProps) {
                     className="w-full text-left bg-white dark:bg-stone-800 p-4 rounded-lg shadow-sm border border-stone-100 dark:border-stone-700 hover:shadow-md hover:border-stone-300 dark:hover:border-stone-600 transition-all group"
                 >
                     <div className="flex justify-between items-start mb-1">
-                        <h3 className="font-serif font-bold text-stone-800 dark:text-dark-text text-lg group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
+                        <h3 className="font-bold text-stone-800 dark:text-dark-text text-lg group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
                             {entry.title || 'Untitled'}
                         </h3>
                         <span className="text-xs text-stone-400 dark:text-primary-300 flex items-center bg-stone-50 dark:bg-stone-900/50 px-2 py-1 rounded">
@@ -75,7 +75,7 @@ export default function EntryList({ onSelectEntry }: EntryListProps) {
                             {format(entry.createdAtUTC, 'MMM d, yyyy')}
                         </span>
                     </div>
-                    <p className="text-stone-500 dark:text-primary-200 text-sm line-clamp-2 font-serif italic opacity-80">
+                    <p className="text-stone-500 dark:text-primary-200 text-sm line-clamp-2 opacity-80 not-italic">
                         {getTextPreview(entry.content)}
                     </p>
                     <div className="mt-2 flex justify-end">

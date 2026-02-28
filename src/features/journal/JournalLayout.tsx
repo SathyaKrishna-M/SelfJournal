@@ -49,7 +49,7 @@ export default function JournalLayout() {
                                 <ArrowLeft className="w-4 h-4" />
                             </Button>
                         )}
-                        <h1 className="text-xl font-serif font-bold text-stone-800">
+                        <h1 className="text-xl font-bold text-stone-800">
                             {view === 'list' && 'My Journal'}
                             {view === 'create' && 'New Entry'}
                             {view === 'edit' && 'Edit Entry'}

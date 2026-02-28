@@ -55,7 +55,7 @@ export default function RecoveryPage() {
                     <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
                         <ShieldAlert className="w-6 h-6 text-green-600" />
                     </div>
-                    <h2 className="text-2xl font-serif text-stone-900 mb-2">Access Restored</h2>
+                    <h2 className="text-2xl text-stone-900 mb-2">Access Restored</h2>
                     <p className="text-stone-600">Your password has been reset. Redirecting to journal...</p>
                 </div>
             </div>
@@ -73,7 +73,7 @@ export default function RecoveryPage() {
                     <div className="mx-auto w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-4">
                         <ShieldAlert className="w-6 h-6 text-red-600" />
                     </div>
-                    <h1 className="text-3xl font-serif text-stone-900 mb-2">Recover Access</h1>
+                    <h1 className="text-3xl text-stone-900 mb-2">Recover Access</h1>
                     <p className="text-stone-500">Enter your Recovery Key to reset your password.</p>
                 </div>
 

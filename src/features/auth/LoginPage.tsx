@@ -38,7 +38,7 @@ export default function LoginPage() {
                     <div className="mx-auto w-12 h-12 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center mb-4">
                         <Lock className="w-6 h-6 text-stone-600 dark:text-primary-300" />
                     </div>
-                    <h1 className="text-3xl font-serif text-stone-900 dark:text-dark-text mb-2">My Journal</h1>
+                    <h1 className="text-3xl text-stone-900 dark:text-dark-text mb-2">My Journal</h1>
                     <p className="text-stone-500 dark:text-primary-300">Your secure, encrypted space.</p>
                 </div>
 

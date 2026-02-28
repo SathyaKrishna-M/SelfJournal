@@ -66,7 +66,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ isOpen, onClose, onS
                 {/* Calendar Section */}
                 <div className="flex-1 p-6 flex flex-col">
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-serif font-bold text-stone-800 dark:text-stone-100">
+                        <h2 className="text-2xl font-bold text-stone-800 dark:text-stone-100">
                             {format(currentMonth, 'MMMM yyyy')}
                         </h2>
                         <div className="flex gap-2">
@@ -125,7 +125,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ isOpen, onClose, onS
                     ${selectedDate ? 'block' : 'hidden md:flex'}
                 `}>
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="font-serif font-bold text-lg text-stone-800 dark:text-stone-200">
+                        <h3 className="font-bold text-lg text-stone-800 dark:text-stone-200">
                             {selectedDate ? format(selectedDate, 'EEEE, MMM do') : 'Select a date'}
                         </h3>
                         <Button variant="ghost" size="icon" onClick={onClose} className="md:hidden">
@@ -163,7 +163,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ isOpen, onClose, onS
                                                 {format(new Date(entry.createdAtUTC), 'h:mm a')}
                                             </span>
                                         </div>
-                                        <h4 className="font-serif font-semibold text-stone-800 dark:text-stone-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
+                                        <h4 className="font-semibold text-stone-800 dark:text-stone-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
                                             {entry.title || "Untitled Entry"}
                                         </h4>
                                         <p className="text-xs text-stone-500 dark:text-stone-400 mt-2 line-clamp-2">

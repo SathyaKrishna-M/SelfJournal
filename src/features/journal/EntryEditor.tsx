@@ -162,9 +162,9 @@ export default function EntryEditor({
                         setIsDirty(true);
                     }}
                     placeholder="Entry Title..."
-                    className="w-full text-4xl font-serif font-bold text-stone-800 dark:text-dark-text placeholder:text-stone-300 dark:placeholder:text-stone-600 bg-transparent border-none focus:ring-0 p-0"
+                    className="w-full text-4xl font-bold text-stone-800 dark:text-dark-text placeholder:text-stone-300 dark:placeholder:text-stone-600 bg-transparent border-none focus:ring-0 p-0"
                 />
-                <div className="text-sm text-stone-400 dark:text-primary-300 mt-2 font-sans">
+                <div className="text-sm text-stone-400 dark:text-primary-300 mt-2">
                     {new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                 </div>
             </div>

@@ -17,16 +17,9 @@ export const ExportService = {
 
         const pdfDoc = await PDFDocument.create();
 
-        // Embed font - try to fetch Caveat, fallback to Helvetica
-        let font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-        try {
-            const fontBytes = await fetch('https://fonts.gstatic.com/s/caveat/v17/Wnz6HAc5bAfYB2Q7ZjMd.woff2').then(res => res.arrayBuffer());
-            font = await pdfDoc.embedFont(fontBytes);
-        } catch (e) {
-            console.warn('Could not load handwriting font, falling back to standard font.', e);
-        }
-
-        const titleFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
+        // Embed font - fallback to Courier since custom font embedding requires TTF buffers
+        const font = await pdfDoc.embedFont(StandardFonts.Courier);
+        const titleFont = await pdfDoc.embedFont(StandardFonts.CourierBold);
 
         // Cover Page
         let page = pdfDoc.addPage();

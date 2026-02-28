@@ -1,14 +1,19 @@
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+@import "@fontsource/ibm-plex-mono/600.css";
+@import "@fontsource/ibm-plex-mono/700.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   body {
-    @apply bg-stone-50 text-stone-900 font-sans antialiased overflow-hidden selection:bg-stone-200 transition-colors duration-300;
+    @apply bg-[#f8f6f2] text-[#2b2b2b] font-sans antialiased overflow-hidden selection:bg-stone-200 transition-colors duration-300 leading-[1.7] tracking-[0.02em];
   }
 
   .dark body {
-    @apply bg-dark-bg text-dark-text selection:bg-stone-700;
+    @apply bg-dark-bg text-[#e5e5e5] selection:bg-stone-700;
   }
 }
 

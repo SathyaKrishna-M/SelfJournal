@@ -39,7 +39,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onNewEntry, onSelectEntry }) => 
                 <div className="flex items-center justify-between px-6 py-4 w-full">
                     {/* Brand - Left */}
                     <div className="pointer-events-auto opacity-80 hover:opacity-100 transition-opacity">
-                        <h1 className="font-serif text-xl text-stone-800 dark:text-dark-text font-bold tracking-tight">
+                        <h1 className="text-xl text-stone-800 dark:text-dark-text font-bold tracking-tight">
                             SelfJournal
                         </h1>
                     </div>

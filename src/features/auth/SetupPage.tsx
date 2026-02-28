@@ -53,7 +53,7 @@ export default function SetupPage() {
                         <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
                             <ShieldCheck className="w-6 h-6 text-green-600" />
                         </div>
-                        <h1 className="text-2xl font-serif text-stone-900 mb-2">Save Your Recovery Key</h1>
+                        <h1 className="text-2xl text-stone-900 mb-2">Save Your Recovery Key</h1>
                         <p className="text-stone-600 text-sm">
                             This is the <span className="font-bold text-red-600">ONLY</span> way to recover your journal if you forget your password.
                         </p>
@@ -104,7 +104,7 @@ export default function SetupPage() {
                     <div className="mx-auto w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mb-4">
                         <Lock className="w-6 h-6 text-stone-600" />
                     </div>
-                    <h1 className="text-3xl font-serif text-stone-900 mb-2">Create Your Journal</h1>
+                    <h1 className="text-3xl text-stone-900 mb-2">Create Your Journal</h1>
                     <p className="text-stone-500">Set a strong password to encrypt your entries.</p>
                 </div>
 
