@@ -66,7 +66,7 @@ export const DriveService = {
 
     async ensureAppFolder(): Promise<string> {
         // 1. Check if folder exists
-        const q = "mimeType = 'application/vnd.google-apps.folder' and name = 'QT-Quality Time' and trashed = false";
+        const q = "mimeType = 'application/vnd.google-apps.folder' and (name = 'QT-Quality Time' or name = 'SelfJournal') and trashed = false";
         const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}`, {
             headers: { 'Authorization': `Bearer ${this.accessToken}` }
         });
@@ -96,7 +96,7 @@ export const DriveService = {
 
     async pruneBackups(folderId: string) {
         // List all backup files in the folder
-        const q = `'${folderId}' in parents and name contains 'qt_quality_time_backup_' and trashed = false`;
+        const q = `'${folderId}' in parents and (name contains 'qt_quality_time_backup_' or name contains 'selfjournal_backup_') and trashed = false`;
         const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&orderBy=createdTime desc`, {
             headers: { 'Authorization': `Bearer ${this.accessToken}` }
         });
@@ -254,7 +254,7 @@ export const DriveService = {
         if (!this.accessToken) await this.authenticate();
 
         // 1. Find Folder
-        const q = "name contains 'qt_quality_time_backup_' and trashed = false";
+        const q = "(name contains 'qt_quality_time_backup_' or name contains 'selfjournal_backup_') and trashed = false";
         const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&orderBy=createdTime desc`, {
             headers: { 'Authorization': `Bearer ${this.accessToken}` }
         });
