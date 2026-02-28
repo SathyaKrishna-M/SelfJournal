@@ -44,7 +44,7 @@ export interface ImageRecord {
     createdAtUTC: number;
 }
 
-const db = new Dexie('SelfJournalDB') as Dexie & {
+const db = new Dexie('QTQualityTimeDB') as Dexie & {
     auth: EntityTable<AuthRecord, 'id'>;
     entries: EntityTable<JournalEntry, 'id'>;
     images: EntityTable<ImageRecord, 'id'>;

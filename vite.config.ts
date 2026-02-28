@@ -10,8 +10,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'SelfJournal',
-        short_name: 'SelfJournal',
+        name: 'QT-Quality Time',
+        short_name: 'QT-Quality Time',
         description: 'Secure, Offline-First Journal',
         theme_color: '#f5f5f4', // white/stone-100
         background_color: '#f5f5f4',

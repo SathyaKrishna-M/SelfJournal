@@ -40,7 +40,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onNewEntry, onSelectEntry }) => 
                     {/* Brand - Left */}
                     <div className="pointer-events-auto opacity-80 hover:opacity-100 transition-opacity">
                         <h1 className="text-xl text-stone-800 dark:text-dark-text font-bold tracking-tight">
-                            SelfJournal
+                            QT-Quality Time
                         </h1>
                     </div>
 

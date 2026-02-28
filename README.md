@@ -1,4 +1,4 @@
-# 📔 SelfJournal
+# 📔 QT-Quality Time
 
 > **Your thoughts, secured. A private, offline-first digital journal with a soul.**
 
@@ -12,7 +12,7 @@
 
 ## ✨ Overview
 
-**SelfJournal** is a modern, aesthetics-focused journaling application designed for privacy and peace of mind. Built with a "Zero-Knowledge" architecture, your entries are encrypted client-side using the Web Crypto API before they ever hit storage.
+**QT-Quality Time** is a modern, aesthetics-focused journaling application designed for privacy and peace of mind. Built with a "Zero-Knowledge" architecture, your entries are encrypted client-side using the Web Crypto API before they ever hit storage.
 
 With a beautiful book-like interface, handwriting typography, and seamless offline capabilities, it offers the tactile feeling of a physical journal with the security of modern encryption.
 
@@ -55,8 +55,8 @@ With a beautiful book-like interface, handwriting typography, and seamless offli
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/SathyaKrishna-M/SelfJournal.git
-    cd SelfJournal
+    git clone https://github.com/SathyaKrishna-M/QT-Quality-Time.git
+    cd QT-Quality-Time
     ```
 
 2.  **Install dependencies**
